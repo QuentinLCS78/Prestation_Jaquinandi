@@ -198,9 +198,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* ---------- Avant / après ---------- */
 .ba{padding-block:0 clamp(90px,12vw,150px);background:var(--paper)}
-.ba-box{position:relative;aspect-ratio:16/9;max-height:82svh;width:100%;overflow:hidden;background:var(--ink);user-select:none;-webkit-user-select:none;touch-action:pan-y}
-@media (max-width:700px){.ba-box{aspect-ratio:4/5}}
+/* Cadre au format des photos (portrait 4:5) pour ne pas les recadrer ; largeur limitée pour tenir dans l'écran */
+.ba-box{position:relative;aspect-ratio:4/5;width:min(100%,calc(82svh * 4 / 5));margin-inline:auto;overflow:hidden;background:var(--ink);user-select:none;-webkit-user-select:none;touch-action:pan-y}
 .ba-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+/* Ordinateur : titre + texte à gauche, slider à droite (remplit la largeur sans recadrer les photos) */
+@media (min-width:900px){
+  .ba{display:grid;grid-template-columns:minmax(0,1fr) min(calc(82svh * 4 / 5),55%);align-items:center;column-gap:clamp(48px,8vw,140px)}
+  .ba .sec-head{flex-direction:column;align-items:flex-start;margin-bottom:0}
+  .ba .sec-head .h2{font-size:clamp(44px,5.2vw,84px);max-width:14ch}
+  .ba-box{width:100%;margin-inline:0}
+}
 .ba-box .after{clip-path:inset(0 0 0 var(--pos,50%))}
 .ba-line{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;margin-left:-1px;background:var(--rose);pointer-events:none}
 .ba-knob{position:absolute;top:50%;left:var(--pos,50%);width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform .3s var(--ease)}
