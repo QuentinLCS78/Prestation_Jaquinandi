@@ -425,12 +425,31 @@
 
   /* ---- Avant / après ---- */
   var ba=$('#ba'), baR=$('#baRange');
+  var baTouched=false;
   function setBA(){ba.style.setProperty('--pos',baR.value+'%')}
-  baR.addEventListener('input',setBA); setBA();
+  baR.addEventListener('input',function(){baTouched=true;setBA()}); setBA();
+  /* Glisser au doigt ou à la souris n'importe où sur l'image (le curseur natif seul ne réagit sur mobile que si on attrape sa poignée invisible) */
+  /* Au doigt : on attend un geste horizontal (un geste vertical fait défiler la page) ; un simple tap déplace la ligne */
+  var baDown=false, baDrag=false, bx=0, by=0;
+  function baMove(e){var r=ba.getBoundingClientRect();baR.value=clamp((e.clientX-r.left)/r.width*100,0,100).toFixed(1);setBA()}
+  function baStart(e){baDrag=true;baTouched=true;try{ba.setPointerCapture(e.pointerId)}catch(_){}baMove(e)}
+  ba.addEventListener('pointerdown',function(e){
+    if(e.button>0)return; baDown=true; bx=e.clientX; by=e.clientY;
+    if(e.pointerType==='mouse'){e.preventDefault();baStart(e)}
+  });
+  ba.addEventListener('pointermove',function(e){
+    if(baDrag){baMove(e);return}
+    if(baDown && Math.abs(e.clientX-bx)>6 && Math.abs(e.clientX-bx)>Math.abs(e.clientY-by)) baStart(e);
+  });
+  ba.addEventListener('pointerup',function(e){
+    if(baDown && !baDrag && Math.abs(e.clientX-bx)<8 && Math.abs(e.clientY-by)<8){baTouched=true;baMove(e)}
+    baDown=baDrag=false;
+  });
+  ['pointercancel','lostpointercapture'].forEach(function(t){ba.addEventListener(t,function(){baDown=baDrag=false})});
   /* petit mouvement d'invitation à l'arrivée */
   if(!reduce && 'IntersectionObserver' in window){
     var baIO=new IntersectionObserver(function(es){if(es[0].isIntersecting){baIO.disconnect();var t0=null;
-      (function an(t){if(!t0)t0=t;var k=(t-t0)/1600;if(k>1){baR.value=50;setBA();return}
+      (function an(t){if(!t0)t0=t;var k=(t-t0)/1600;if(baTouched)return;if(k>1){baR.value=50;setBA();return}
         baR.value=(50+Math.sin(k*Math.PI*2)*18*(1-k)).toFixed(1);setBA();requestAnimationFrame(an)})(performance.now());}},{threshold:.5});
     baIO.observe(ba);
   }
