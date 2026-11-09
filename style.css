@@ -79,6 +79,39 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   .hdr .logo b{font-size:24px}
   .hdr .logo small{font-size:11px;margin-top:4px}
 }
+/* ---------- Menu ---------- */
+.hdr-l{justify-self:start;display:flex;align-items:center;gap:10px}
+.hdr-menu{display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 18px 0 14px;border:1px solid currentColor;border-radius:999px;background:none;color:inherit;font:inherit;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:background .35s,color .35s,border-color .35s}
+.hdr-menu:hover{background:var(--rose);border-color:var(--rose);color:var(--ink)}
+.hdr-menu .ico{position:relative;width:16px;height:10px}
+.hdr-menu .ico i{position:absolute;left:0;right:0;height:1.5px;background:currentColor;transition:transform .4s var(--ease),top .4s var(--ease)}
+.hdr-menu .ico i:first-child{top:0}.hdr-menu .ico i:last-child{top:8.5px}
+.menu-open .hdr-menu .ico i:first-child{top:4.25px;transform:rotate(45deg)}
+.menu-open .hdr-menu .ico i:last-child{top:4.25px;transform:rotate(-45deg)}
+/* Menu ouvert : en-tête visible, transparent sur fond sombre */
+.menu-open{overflow:hidden}
+.menu-open .hdr{transform:none;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:#fff;border-bottom-color:transparent}
+.menu-open .hdr .logo small{color:var(--rose)}
+.menu-open .hdr-cta{visibility:hidden}
+.mnav{position:fixed;inset:0;z-index:45;background:var(--ink);color:#fff;overflow-y:auto;opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility 0s .45s}
+.menu-open .mnav{opacity:1;visibility:visible;transition:opacity .45s var(--ease)}
+.mnav-in{min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:48px;padding-top:calc(env(safe-area-inset-top,0px) + 140px);padding-bottom:clamp(40px,7vh,80px)}
+.mnav-links{list-style:none;margin:0;padding:0}
+.mnav-links a{display:flex;align-items:baseline;gap:18px;padding:6px 0;font-family:var(--display);font-size:clamp(40px,6.4vw,92px);line-height:1.1;letter-spacing:-.01em;color:#fff;text-decoration:none;transform:translateY(24px);opacity:0;transition:color .3s,transform .7s var(--ease),opacity .7s var(--ease)}
+.mnav-links span{font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.14em;color:#9a9a9a;min-width:2ch}
+.mnav-links a:hover,.mnav-links a[aria-current]{color:var(--rose)}
+.mnav-links a[aria-current]{font-style:italic}
+.menu-open .mnav-links a{transform:none;opacity:1}
+.menu-open .mnav-links li:nth-child(2) a{transition-delay:.05s}
+.menu-open .mnav-links li:nth-child(3) a{transition-delay:.1s}
+.menu-open .mnav-links li:nth-child(4) a{transition-delay:.15s}
+.mnav-side{display:grid;justify-items:start;gap:18px;font-size:14px}
+.mnav-tel{color:#fff;text-decoration:none;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.mnav-soc{margin:0;display:flex;gap:20px}
+.mnav-soc a,.mnav-tel{color:#cfcfcf;text-decoration:none}
+.mnav-soc a:hover,.mnav-tel:hover{color:var(--rose)}
+@media (max-width:760px){.mnav-in{grid-template-columns:1fr;align-items:start;align-content:space-between;padding-top:calc(env(safe-area-inset-top,0px) + 110px)}}
+@media (prefers-reduced-motion:reduce){.mnav,.mnav-links a{transition:none}}
 /* Bouton Contact & devis + téléphone */
 .hdr-cta{justify-self:start;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 20px;border:1px solid currentColor;border-radius:999px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;text-decoration:none;transition:background .35s,color .35s,border-color .35s}
 .hdr-cta:hover{background:var(--rose);border-color:var(--rose);color:var(--ink)}
@@ -92,7 +125,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   .hdr-cta{padding:0 14px}.hdr-cta .l{display:none}.hdr-cta .s{display:inline}.hdr-cta svg{display:none}
   .hdr-tel .t{display:none}.hdr-tel svg{display:block}
   .hdr .hdr-tel{width:44px;height:44px;justify-content:center;border:1px solid currentColor;border-radius:50%;padding:0}
+  .hdr-menu{width:44px;padding:0;justify-content:center}.hdr-menu .lab{display:none}
 }
+@media (max-width:520px){.hdr-l .hdr-cta{display:none}}
 .call-cta{display:flex;flex-wrap:wrap;align-items:center;gap:20px 32px}
 .call .pill.dark-pill{min-height:52px}
 /* Page contact */
