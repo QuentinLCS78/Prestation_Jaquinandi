@@ -68,6 +68,17 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .logo b{display:block;font-family:var(--display);font-weight:400;font-size:23px;letter-spacing:.01em}
 .logo small{display:block;font-family:var(--stamp);font-size:10.5px;letter-spacing:.12em;color:var(--rose);margin-top:4px}
 .hdr.solid .logo small{color:var(--rose-ink)}
+/* Logo de l'en-tête agrandi (≈ ×1,5 sur ordinateur, ×1,25 sur mobile) */
+.hdr .logo{gap:14px}
+.hdr .logo svg{width:50px;height:50px}
+.hdr .logo b{font-size:34px}
+.hdr .logo small{font-size:14.5px;margin-top:6px}
+@media (max-width:640px){
+  .hdr .logo{gap:10px}
+  .hdr .logo svg{width:36px;height:36px}
+  .hdr .logo b{font-size:24px}
+  .hdr .logo small{font-size:11px;margin-top:4px}
+}
 /* Bouton Contact & devis + téléphone */
 .hdr-cta{justify-self:start;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 20px;border:1px solid currentColor;border-radius:999px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;text-decoration:none;transition:background .35s,color .35s,border-color .35s}
 .hdr-cta:hover{background:var(--rose);border-color:var(--rose);color:var(--ink)}
