@@ -54,7 +54,7 @@ Dans tous les cas d'échec, ce sont les **photos fixes du carrousel** qui s'affi
 - quota de vues épuisé, compte Behold en pause ;
 - flux supprimé ou feed-id erroné ;
 - panne de Behold, ou script bloqué par un bloqueur de publicité ;
-- aucune photo reçue au bout de 8 secondes.
+- aucune photo reçue 8 secondes après l'arrivée de la section Instagram à l'écran.
 
 Le visiteur ne voit jamais de section vide ni de message d'erreur de Behold.
 Dès que le flux remarche (par exemple le 1er du mois suivant), le flux Instagram revient tout seul.

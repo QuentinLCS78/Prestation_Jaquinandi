@@ -477,7 +477,7 @@
        - photo chargée depuis behold.pictures            → le flux marche : il remplace les cases grises ;
        - flux en erreur (404, quota épuisé / compte en pause…) ou module « ErrorMessage » de Behold
                                                           → on retire le widget, les photos fixes s'affichent ;
-       - rien au bout de 8 s (panne, script bloqué)       → idem. */
+       - rien 8 s après l'arrivée de la section à l'écran (panne, script bloqué) → idem. */
   var insta=$('#insta'), feedId=insta?(insta.getAttribute('data-behold')||'').trim():'';
   if(feedId && /^[A-Za-z0-9_-]+$/.test(feedId)){
     var feedBox=$('#instaFeed'), bw=d.createElement('behold-widget'), carParts=[car,cPrev,cNext,$('#carProgWrap')];
@@ -517,7 +517,13 @@
       if(!beholdPO && window.performance && performance.getEntriesByType){
         beholdPoll=setInterval(function(){beholdCheck(performance.getEntriesByType('resource'))},400);
       }
-      beholdWait=setTimeout(function(){beholdFinish(false)},8000);
+      /* Délai de sécurité : il ne démarre que quand la section est réellement à l'écran. Behold ne télécharge ses photos
+         qu'une fois le widget visible ; un visiteur qui fait défiler lentement ne doit pas déclencher le repli trop tôt. */
+      var startWait=function(){ if(!beholdDone && !beholdWait) beholdWait=setTimeout(function(){beholdFinish(false)},8000); };
+      if('IntersectionObserver' in window){
+        var vio=new IntersectionObserver(function(es){ if(es[0].isIntersecting){ vio.disconnect(); startWait(); } });
+        vio.observe(insta);
+      } else startWait();
     };
     if('IntersectionObserver' in window){
       var bio=new IntersectionObserver(function(es){if(es[0].isIntersecting){bio.disconnect();loadBehold()}},{rootMargin:'800px 0px'});
