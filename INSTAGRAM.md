@@ -1,32 +1,69 @@
-# Flux Instagram automatique
+# Flux Instagram (Behold)
 
-Le carrousel « Au fil de la saison » affiche les 12 derniers posts de @prestation.jaquinandi.
-Une tâche GitHub Actions (`.github/workflows/instagram.yml`) tourne chaque jour : elle récupère les posts
-via l'API officielle d'Instagram, télécharge les images dans `img/insta/` et écrit `instagram.json`.
-Le site lit ce fichier. S'il est absent, les photos fixes du HTML restent affichées.
+La section « Au fil de la saison » de la page d'accueil peut afficher les derniers posts de
+@prestation.jaquinandi grâce au widget **Behold** ([behold.so](https://behold.so)), plan gratuit.
+Il n'y a ni API, ni jeton, ni tâche automatique à gérer : Behold s'occupe de tout.
 
-Coût : 0 €. Pas de widget tiers, pas de limite de vues, le jeton reste secret (jamais dans le site).
+Le lien entre le site et Behold tient dans un seul attribut, dans `index.html` :
 
-## Mise en place (une seule fois, environ 20 minutes)
+```html
+<section class="insta" id="insta" data-behold="" …>
+```
 
-1. **Compte Instagram professionnel.** Dans l'app Instagram du client : Paramètres → Type de compte et outils →
-   Passer à un compte professionnel (gratuit). L'API ne fonctionne qu'avec un compte professionnel.
-2. **App Meta.** Sur developers.facebook.com → Mes apps → Créer une app → cas d'usage Instagram
-   (« API Instagram avec connexion Instagram »).
-3. **Jeton.** Dans l'app : Configuration de l'API avec connexion Instagram → Générer des jetons d'accès →
-   ajouter le compte @prestation.jaquinandi (le client se connecte lui-même) → copier le jeton.
-   Il est valable 60 jours ; le script le renouvelle tout seul à chaque passage.
-4. **Secrets GitHub** (dépôt du site → Settings → Secrets and variables → Actions → New repository secret) :
-   - `IG_TOKEN` : le jeton Instagram de l'étape 3.
-   - `GH_PAT` : un jeton GitHub « fine-grained » (Settings du compte → Developer settings → Personal access tokens),
-     limité à ce dépôt, avec la permission **Secrets : Read and write**. Il sert à enregistrer le jeton Instagram renouvelé.
-5. **Premier lancement.** Onglet Actions → « Flux Instagram » → Run workflow. Au bout d'une minute,
-   `instagram.json` et `img/insta/` apparaissent dans le dépôt et le site se met à jour.
+- `data-behold` **vide** : le carrousel de photos fixes du HTML s'affiche (situation actuelle).
+- `data-behold` **rempli** avec l'ID du flux : le carrousel est remplacé par le widget Behold.
+  Le script Behold n'est chargé que lorsque le visiteur approche de la section, pour économiser le quota de vues.
 
-## Bon à savoir
+## Limites du plan gratuit
 
-- Les vidéos (Reels) s'affichent avec leur miniature et une icône lecture ; un clic ouvre le post sur Instagram.
-- Le texte affiché est la première ligne de la légende, sans hashtags (le bloc contact est ignoré).
-- Si le jeton expire (tâche arrêtée plus de 60 jours), refaire l'étape 3 et remplacer `IG_TOKEN`.
-- Si `GH_PAT` expire, en créer un nouveau : le flux continue de marcher, mais le jeton renouvelé n'est plus sauvegardé.
-- Pour changer le nombre de posts : `IG_LIMIT` dans le fichier du workflow.
+| | Plan gratuit |
+|---|---|
+| Nombre de posts | **6 maximum** |
+| Mise à jour | **1 fois par jour** |
+| Vues | **1 200 par mois**. Au-delà, le flux est mis en pause jusqu'au mois suivant : le site réaffiche alors automatiquement les photos fixes (voir plus bas) |
+| Mises en page | Grille ou « gallery wall ». Le carrousel est réservé aux plans payants |
+| Marque | Logo Behold visible au survol |
+| Compte Instagram | Compte **professionnel** obligatoire (Business ou Créateur) |
+
+## Mise en place (une seule fois)
+
+1. **Passer le compte Instagram en professionnel.** Dans l'app Instagram du client : Paramètres →
+   Type de compte et outils → Passer à un compte professionnel (Business ou Créateur, gratuit).
+2. **Créer le compte Behold** sur [behold.so](https://behold.so), avec l'adresse e-mail du client,
+   pour qu'il en reste propriétaire.
+3. **Connecter Instagram** : dans Behold, ajouter une source et se connecter avec @prestation.jaquinandi.
+4. **Créer un flux de type « Widget »** et le personnaliser avec la charte du site :
+   - anthracite `#1E1E1E` (texte),
+   - rose `#FE9DD9` (accents),
+   - blanc cassé `#F5F5F5` (fond).
+5. **Copier le feed-id** du flux : c'est l'identifiant affiché dans le code d'intégration,
+   `<behold-widget feed-id="XXXXXXXX">`.
+6. **Le coller dans `data-behold`** dans `index.html`, puis commit et push :
+   ```html
+   <section class="insta" id="insta" data-behold="XXXXXXXX" …>
+   ```
+   Le site GitHub Pages se met à jour en 1 à 2 minutes.
+
+## Repli automatique sur les photos fixes
+
+Le site n'affiche le flux Behold que lorsqu'il a vraiment chargé des photos Instagram.
+Pendant le chargement (en général moins d'une seconde, et il démarre avant que le visiteur arrive à la section),
+des cases grises occupent la place : si Behold marche, le visiteur ne voit jamais les photos fixes.
+Dans tous les cas d'échec, ce sont les **photos fixes du carrousel** qui s'affichent à la place des cases grises :
+
+- quota de vues épuisé, compte Behold en pause ;
+- flux supprimé ou feed-id erroné ;
+- panne de Behold, ou script bloqué par un bloqueur de publicité ;
+- aucune photo reçue au bout de 8 secondes.
+
+Le visiteur ne voit jamais de section vide ni de message d'erreur de Behold.
+Dès que le flux remarche (par exemple le 1er du mois suivant), le flux Instagram revient tout seul.
+
+Behold ne fournit pas d'événement d'erreur et son widget est fermé (on ne peut pas lire son contenu).
+Le site surveille donc les fichiers téléchargés : une photo venant de `behold.pictures` signifie que le flux marche,
+une erreur sur `feeds.behold.so` ou l'affichage du message d'erreur de Behold signifie qu'il ne marche pas.
+Si Behold change un jour son fonctionnement, le pire cas est le repli sur les photos fixes, jamais une section cassée.
+
+## Revenir définitivement aux photos fixes
+
+Vider l'attribut (`data-behold=""`), puis commit et push. Le script Behold n'est alors plus chargé du tout.
