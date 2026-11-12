@@ -34,7 +34,7 @@ Le lien entre le site et Behold tient dans un seul attribut, dans `index.html` :
 3. **Connecter Instagram** : dans Behold, ajouter une source et se connecter avec @prestation.jaquinandi.
 4. **Créer un flux de type « Widget »** et le personnaliser avec la charte du site :
    - anthracite `#1E1E1E` (texte),
-   - rose `#FE9DD9` (accents),
+   - rose `#D73F6A` (accents, le rose du logo),
    - blanc cassé `#F5F5F5` (fond).
 5. **Copier le feed-id** du flux : c'est l'identifiant affiché dans le code d'intégration,
    `<behold-widget feed-id="XXXXXXXX">`.
